@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Image, Icon, Rating, Divider, Button } from 'semantic-ui-react';
 import './main.css';
 import {Link} from 'react-router-dom';
-
+import EditForm from './EditForm';
 export default class OneContact extends Component {
     state = {
         contact: {},
@@ -26,6 +26,54 @@ export default class OneContact extends Component {
         })
     }
 
+    /* CRUD save & update; Resets the state of the data to re-render the object/component to DOM */
+    saveUpdate = (userObject) => {
+        fetch(`http://localhost:4000/contacts/${this.props.id}`,
+        { method: 'PATCH',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userObject)
+        })
+        .then((response)=>{
+            return response.json();
+        }). then ((data)=>{
+            this.setState({
+                contact: data,
+                edit: false,
+            })
+            console.log(this.state.contact)
+        })
+    }
+
+
+    editContact = () => {
+        this.setState({
+            edit: true
+        })
+    }
+
+    cancelUpdate = () => {
+        this.setState({
+            edit: false,
+        })
+    }
+
+    openForm = () => {
+        if(this.state.edit){
+            return(
+                <div>
+                    <Divider section />
+                    <EditForm 
+                        title = "Edit this contact" 
+                        person = {this.state.contact} 
+                        saveUpdate = {this.saveUpdate}
+                        cancelUpdate = {this.cancelUpdate}
+                    />
+                    </div>
+            )
+        }
+    }
 
     render(){
         return(
@@ -57,7 +105,7 @@ export default class OneContact extends Component {
                     <p><a href={`mailto:${this.state.contact.email}`}>{this.state.contact.email}</a></p>
                     <p>{this.state.contact.notes}</p>
                     <Rating maxRating={5} defaultRating={this.state.contact.rating} icon='star' size='massive' />
-                    {/* {this.openForm()} */}
+                    {this.openForm()}
                 </Grid.Column>
             </Grid>
             

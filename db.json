@@ -11,17 +11,6 @@
   ],
   "contacts": [
     {
-      "id": 1,
-      "ownerID": 1,
-      "name": "Elmer Shields",
-      "email": "elmer_shields@yahoo.com",
-      "company": "ACME",
-      "notes": "These are some notes...",
-      "phone": "615-739-3124",
-      "rating": 5,
-      "image": "https://s3.amazonaws.com/uifaces/faces/twitter/elenadissi/128.jpg"
-    },
-    {
       "id": 2,
       "ownerID": 1,
       "name": "Misty Shields",
@@ -31,6 +20,17 @@
       "phone": "615-739-3124",
       "rating": 5,
       "image": "https://s3.amazonaws.com/uifaces/faces/twitter/elenadissi/128.jpg"
+    },
+    {
+      "email": "jon@email.com",
+      "name": "jon",
+      "company": "nfib",
+      "notes": "creative director",
+      "phone": "88888888",
+      "rating": "6",
+      "image": "",
+      "ownerID": 1,
+      "id": 3
     }
   ]
 }

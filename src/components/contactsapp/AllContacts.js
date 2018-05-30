@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Card, Button, Image } from 'semantic-ui-react';
+import { Card, Button, Image, Divider, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-
+import AddForm from './AddForm';
 export default class AllContacts extends Component {
 
     state = {
-        contacts:[]
+        contacts:[],
+        addContact: false,
     }
 
     componentDidMount(){
@@ -16,9 +17,9 @@ export default class AllContacts extends Component {
             this.loadContacts(storedUserObj.id)
         }else{
             this.loadContacts(this.props.user.id)
-        }
-        
+        }  
     }
+
 
     loadContacts = (id) => {
         fetch(`http://localhost:4000/contacts?ownerID=${id}`)
@@ -32,12 +33,90 @@ export default class AllContacts extends Component {
         })
     }
 
+    /* CRUD save & update; Resets the state of the data to re-render the object/component to DOM */
+    saveUpdate = (userObject) => {
+        userObject.ownerID = this.props.user.id
+        fetch(`http://localhost:4000/contacts/`,
+        { method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userObject)
+        })
+        .then((response)=>{
+            return response.json();
+        }). then ((data)=>{
+            this.setState({
+                // contact: data,
+                addContact: false,
+            })
+            this.loadContacts(this.props.user.id)
+        })
+    }
+
+    /* Shows the form when the addContact button is clicked */
+    addContact = () => {
+        this.setState({
+            addContact: true,
+        })
+    }
+
+    cancelUpdate = () => {
+        this.setState({
+            addContact: false,
+        })
+    }
+
+    deleteContact = (id) =>{
+        return fetch(`http://localhost:4000/contacts/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'COntent-Type': 'application/json'
+            }
+        }).then((response) => {
+            const storedUser = sessionStorage.getItem('user');
+            const storedUserObj = JSON.parse(storedUser);
+            /* loads the contacts so it can re-render in the dom */
+            this.loadContacts(storedUserObj.id);
+        })
+    }
+
+    openForm = () => {
+        if(this.state.addContact){
+            return(
+                <div> 
+                    <Divider section />
+                        <AddForm 
+                            title='Add contact'
+                            saveUpdate={this.saveUpdate}
+                            cancelUpdate={this.cancelUpdate} 
+                        />
+                    <Divider section />
+                </div>
+            )
+        } else {
+            return(
+            <div>
+                    <Button 
+                        color='green' 
+                        onClick={this.addContact}
+                    >
+                    <Icon name='add user' />
+                        Add Contact
+                    </Button>
+                    <Divider section />
+                </div>
+            )
+        }
+    }
+
 
     render () {
         return(
             <div>
+                {this.openForm()}
                 <h1> All Contacts </h1>
-                <ContactsList contacts={this.state.contacts} />
+                <ContactsList contacts={this.state.contacts} deleteContact={this.deleteContact}/>
             </div>
         )
     }
